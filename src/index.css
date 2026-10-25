@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0A0A0A;
+  --color-ink: #FFFFFF;
+  --color-accent: #E11D48;
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', sans-serif;
+  --animate-shine: shine 3s linear infinite;
+  --animate-marquee-slow: marquee-slow 45s linear infinite;
+  --animate-marquee-slow-reverse: marquee-slow-reverse 45s linear infinite;
+}
+
+@keyframes marquee-slow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-55%); }
+}
+
+@keyframes marquee-slow-reverse {
+  0% { transform: translateX(-55%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shine {
+  0% { 
+    background-position: 200% center; 
+    -webkit-mask-position: 200% center;
+    mask-position: 200% center;
+  }
+  100% { 
+    background-position: -200% center; 
+    -webkit-mask-position: -200% center;
+    mask-position: -200% center;
+  }
+}
+
+:root {
+  --bg: #0A0A0A;
+  --ink: #FFFFFF;
+  --accent: #E11D48;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Brutalist specific components - Now Sophisticated Dark */
+.brutalist-border {
+  border: 2px solid var(--ink);
+}
+
+.brutalist-header {
+  border-bottom: 2px solid var(--ink);
+  background: var(--bg);
+}
+
+.brutalist-card {
+  border: 2px solid var(--ink);
+  background: #111111;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.brutalist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0px var(--accent);
+}
+
+.brutalist-button {
+  background: var(--accent);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 12px 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 6px 6px 0px var(--ink);
+}
+
+.brutalist-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px var(--accent);
+}
+
+.brutalist-button:active {
+  transform: scale(0.98);
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 16px 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+.marquee-content {
+  display: flex;
+  animation: marquee 20s linear infinite;
+}
+
+.marquee-content span {
+  padding: 0 32px;
+  font-weight: 900;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Bento Grid Layouts */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.bento-item {
+  border: 2px solid var(--ink);
+  padding: 24px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.bento-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0px var(--accent);
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    display: flex;
+    flex-direction: column;
+  }
+}
