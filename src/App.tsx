@@ -124,26 +124,18 @@ export default function App() {
         {/* HERO SECTION */}
         <section className="w-full min-h-[calc(100vh-80px)] px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center flex flex-col justify-center items-center">
           <div className="flex flex-col items-center gap-8 w-full max-w-7xl mx-auto">
-            <h1 className="w-full text-center font-heading font-black tracking-tighter uppercase text-white opacity-100 text-3xl min-[420px]:text-4xl sm:text-5xl md:text-6xl lg:text-[5.6vw] xl:text-[5.8vw] leading-[0.95]">
+            <h1 className="w-full max-w-6xl text-center font-heading font-black tracking-tighter uppercase text-white opacity-100 text-5xl sm:text-6xl md:text-7xl lg:text-[4.75rem] xl:text-[5.5rem] leading-[1.02]">
               <span className="block w-full text-white opacity-100 font-black">
-                <span className="block whitespace-nowrap">I GROW</span>
-                <span className="block text-accent whitespace-nowrap">REAL ESTATE &amp; TECH BRANDS</span>
-                <span className="block whitespace-nowrap">SOLO, END TO END.</span>
+                <span className="block sm:whitespace-nowrap">I GROW <span className="text-accent">REAL ESTATE</span></span>
+                <span className="block text-accent sm:whitespace-nowrap">&amp; TECH BRANDS</span>
+                <span className="block sm:whitespace-nowrap">SOLO, END TO END.</span>
               </span>
             </h1>
-            <ScrollReveal
-              as="p"
-              className="text-xl md:text-2xl font-medium max-w-2xl leading-snug text-white/80 text-center mx-auto"
-              start="top 95%"
-              wordAnimationEnd="bottom 70%"
-            >
-              I'm Vivek, a freelance marketer with 2+ years of hands-on experience. I run your content, creative, and ads myself, so there are no handoffs and no guesswork.
-            </ScrollReveal>
             <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto justify-center items-center">
-              <a href="#contact" className="brutalist-button px-8 py-4 text-lg w-full sm:w-auto flex justify-center items-center gap-4">
-                BOOK A CALL <ArrowRight className="w-5 h-5" />
+              <a href="#contact" className="brutalist-button px-5 py-2.5 text-sm font-bold w-full sm:w-auto flex justify-center items-center gap-2.5">
+                BOOK A CALL <ArrowRight className="w-3.5 h-3.5" />
               </a>
-              <a href="#results" className="brutalist-card px-8 py-4 text-lg font-bold w-full sm:w-auto flex justify-center items-center hover:text-accent cursor-pointer bg-bg text-center">
+              <a href="#results" className="brutalist-card px-5 py-2.5 text-sm font-bold w-full sm:w-auto flex justify-center items-center hover:text-accent cursor-pointer bg-bg text-center">
                 See My Results
               </a>
             </div>
