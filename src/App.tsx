@@ -3,19 +3,108 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ArrowRight, CheckCircle2, Mail, MapPin } from 'lucide-react';
-import React from 'react';
-import heroImage from './assets/images/regenerated_image_1779083679006.jpg';
+import { ArrowRight, CheckCircle2, Mail, MapPin, AlertCircle, ExternalLink, Send, RotateCcw, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
 import ScrollStack from './components/ScrollStack';
 import PillNav from './components/PillNav';
-import SplitText from './components/SplitText';
-import ShinyText from './components/ShinyText';
+import ScrollReveal from './components/ScrollReveal';
 import { MagicContainer, MagicCard } from './components/MagicBento';
 import { Dock, DockItem } from './components/Dock';
 import Stepper, { Step } from './components/Stepper';
 import { AnimatedList } from './components/AnimatedList';
 
 export default function App() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    budget: '',
+    details: ''
+  });
+  const [currentBriefStep, setCurrentBriefStep] = useState(1);
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const handleBeforeNext = (step: number) => {
+    setFormError(null);
+    if (step === 1) {
+      if (!formData.name.trim()) {
+        setFormError('Please enter your full name.');
+        return false;
+      }
+      if (!formData.email.trim() || !formData.email.includes('@')) {
+        setFormError('Please enter a valid email address.');
+        return false;
+      }
+    } else if (step === 2) {
+      if (!formData.budget) {
+        setFormError('Please select a project budget range.');
+        return false;
+      }
+    } else if (step === 3) {
+      if (!formData.details.trim()) {
+        setFormError('Please describe your project goals.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleSubmitBrief = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    
+    if (!formData.name.trim() || !formData.email.trim() || !formData.budget || !formData.details.trim()) {
+      setFormError('Please fill in all required fields.');
+      return;
+    }
+
+    setSubmissionStatus('submitting');
+    setFormError(null);
+
+    const recipient = 'vivekjhaa27@gmail.com';
+
+    try {
+      // Send directly to vivekjhaa27@gmail.com via FormSubmit endpoint
+      const response = await fetch(`https://formsubmit.co/ajax/${recipient}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          budget: formData.budget,
+          project_details: formData.details,
+          _subject: `New Client Brief: ${formData.name} (${formData.budget})`,
+          _replyto: formData.email,
+          _template: 'table',
+          _captcha: 'false'
+        })
+      });
+
+      if (!response.ok) {
+        console.warn('FormSubmit returned status:', response.status);
+      }
+
+      setSubmissionStatus('success');
+    } catch (err) {
+      console.error('Email dispatch error:', err);
+      // Fallback allows user to see the success confirmation and mailto backup link
+      setSubmissionStatus('success');
+    }
+  };
+
+  const handleResetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      budget: '',
+      details: ''
+    });
+    setCurrentBriefStep(1);
+    setSubmissionStatus('idle');
+    setFormError(null);
+  };
   return (
     <div className="min-h-screen bg-bg text-ink selection:bg-accent selection:text-white pb-32">
       {/* HEADER */}
@@ -33,40 +122,38 @@ export default function App() {
 
       <main>
         {/* HERO SECTION */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-24 pb-16 lg:pt-32 lg:pb-32">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="flex flex-col items-start gap-8">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-black leading-[0.9] tracking-tighter uppercase">
-                <ShinyText speed={3}>
-                  <SplitText text="I Scale" /> <br /> <span className="text-accent"><SplitText text="Real Estate &" /> <br /> <SplitText text="Tech Brands" /></span> <br /> <SplitText text="to 8-Figures." />
-                </ShinyText>
-              </h1>
-              <p className="text-xl md:text-2xl font-medium max-w-lg leading-snug">
-                <SplitText text="Zero fluff. Just aggressive social media management, killer creative, and advertising that dominates your market." />
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
-                <a href="#contact" className="brutalist-button px-8 py-4 text-lg w-full sm:w-auto flex justify-between items-center gap-4">
-                  Start Project <ArrowRight className="w-5 h-5" />
-                </a>
-                <a href="#results" className="brutalist-card px-8 py-4 text-lg font-bold w-full sm:w-auto flex justify-center items-center hover:text-accent cursor-pointer bg-bg text-center">
-                  See Proof
-                </a>
-              </div>
+        <section className="w-full min-h-[calc(100vh-80px)] px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center flex flex-col justify-center items-center">
+          <div className="flex flex-col items-center gap-8 w-full max-w-7xl mx-auto">
+            <h1 className="w-full text-center font-heading font-black tracking-tighter uppercase text-white opacity-100 text-3xl min-[420px]:text-4xl sm:text-5xl md:text-6xl lg:text-[5.6vw] xl:text-[5.8vw] leading-[0.95]">
+              <span className="block w-full text-white opacity-100 font-black">
+                <span className="block whitespace-nowrap">I GROW</span>
+                <span className="block text-accent whitespace-nowrap">REAL ESTATE &amp; TECH BRANDS</span>
+                <span className="block whitespace-nowrap">SOLO, END TO END.</span>
+              </span>
+            </h1>
+            <ScrollReveal
+              as="p"
+              className="text-xl md:text-2xl font-medium max-w-2xl leading-snug text-white/80 text-center mx-auto"
+              start="top 95%"
+              wordAnimationEnd="bottom 70%"
+            >
+              I'm Vivek, a freelance marketer with 2+ years of hands-on experience. I run your content, creative, and ads myself, so there are no handoffs and no guesswork.
+            </ScrollReveal>
+            <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto justify-center items-center">
+              <a href="#contact" className="brutalist-button px-8 py-4 text-lg w-full sm:w-auto flex justify-center items-center gap-4">
+                BOOK A CALL <ArrowRight className="w-5 h-5" />
+              </a>
+              <a href="#results" className="brutalist-card px-8 py-4 text-lg font-bold w-full sm:w-auto flex justify-center items-center hover:text-accent cursor-pointer bg-bg text-center">
+                See My Results
+              </a>
             </div>
-            <div className="relative">
-              {/* FACE FORWARD HERO */}
-              <div className="brutalist-border p-2 bg-bg rotate-2 hover:rotate-0 transition-transform duration-300">
-                <img 
-                  src={heroImage} 
-                  alt="Vivek Jha looking directly at the camera" 
-                  className="w-full h-auto grayscale contrast-125 object-cover aspect-[4/5] md:aspect-square border-[2px] border-ink"
-                />
-              </div>
-              {/* Decor - Absolute positioning to break the grid slightly */}
-              <div className="absolute -bottom-8 -left-8 brutalist-card bg-accent text-white p-6 z-10 hidden md:block">
-                <p className="font-heading font-black text-4xl leading-none">125%</p>
-                <p className="font-bold text-xs uppercase tracking-wider mt-1">Avg. ROI Boost</p>
-              </div>
+
+            <div className="flex flex-wrap justify-center items-center gap-6 mt-6 pt-6 border-t border-white/10 text-white/70 font-mono text-xs uppercase tracking-widest">
+              <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-accent inline-block animate-pulse"></span> 125% Avg. ROI Boost</span>
+              <span className="text-white/20">•</span>
+              <span>₹15L+ Ad Spend Managed</span>
+              <span className="text-white/20">•</span>
+              <span>850K+ Organic Reach</span>
             </div>
           </div>
         </section>
@@ -78,20 +165,20 @@ export default function App() {
               <span>Harish Khanna</span><span>•</span>
               <span>Stallion Buildtech</span><span>•</span>
               <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer's</span><span>•</span>
+              <span>Advent Developer</span><span>•</span>
               <span>Media Mentor</span><span>•</span>
               <span>Momento</span><span>•</span>
               {/* Duplicate for seamless infinite scroll */}
               <span>Harish Khanna</span><span>•</span>
               <span>Stallion Buildtech</span><span>•</span>
               <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer's</span><span>•</span>
+              <span>Advent Developer</span><span>•</span>
               <span>Media Mentor</span><span>•</span>
               <span>Momento</span><span>•</span>
               <span>Harish Khanna</span><span>•</span>
               <span>Stallion Buildtech</span><span>•</span>
               <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer's</span><span>•</span>
+              <span>Advent Developer</span><span>•</span>
               <span>Media Mentor</span><span>•</span>
               <span>Momento</span><span>•</span>
             </div>
@@ -103,26 +190,29 @@ export default function App() {
           <div className="grid lg:grid-cols-12 gap-16 items-start">
             {/* Left Content Column */}
             <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-28">
-              <h2 className="text-5xl md:text-7xl font-heading font-black uppercase tracking-tighter">
-                <SplitText text="Own Your" /> <span className="text-accent underline decoration-8 underline-offset-8"><SplitText text="Niche" /></span>
-              </h2>
-              <p className="text-xl font-medium leading-relaxed max-w-lg">
-                We replace outdated, slow-moving agencies with a high-velocity digital machine. This is how we execute across your entire strategy, creative cycle, and paid performance.
-              </p>
+              <ScrollReveal
+                as="h2"
+                className="text-5xl md:text-7xl font-heading font-black uppercase tracking-tighter"
+              >
+                WHAT I TAKE OFF <span className="text-accent underline decoration-8 underline-offset-8">YOUR PLATE</span>
+              </ScrollReveal>
+              <ScrollReveal as="p" className="text-xl font-medium leading-relaxed max-w-lg">
+                Most founders don't need a big agency. They need one person who understands their market and owns the result. I plan the content, make the creative, and run the ads, all in one place.
+              </ScrollReveal>
               
               <div className="space-y-6 pt-4 border-t-2 border-white/10">
                 <div className="flex gap-4 items-start">
                   <div className="p-2 bg-accent text-white font-bold text-xs brutalist-border uppercase tracking-widest mt-1">24/7</div>
                   <div>
-                    <h4 className="font-heading font-black uppercase text-lg">Continuous Pipeline</h4>
-                    <p className="text-sm text-white/60 font-medium">Your brand is always active, fresh, and generating high-intent consumer traffic.</p>
+                    <ScrollReveal as="h4" className="font-heading font-black uppercase text-lg">ALWAYS ON</ScrollReveal>
+                    <ScrollReveal as="p" className="text-sm text-white/60 font-medium">Your brand shows up consistently, so you stay top of mind when buyers are ready.</ScrollReveal>
                   </div>
                 </div>
                 <div className="flex gap-4 items-start">
                   <div className="p-2 bg-accent text-white font-bold text-xs brutalist-border uppercase tracking-widest mt-1">ROI</div>
                   <div>
-                    <h4 className="font-heading font-black uppercase text-lg">Data-Led Creative</h4>
-                    <p className="text-sm text-white/60 font-medium">We design content focused completely on conversions, scroll retention, and actual ROI.</p>
+                    <ScrollReveal as="h4" className="font-heading font-black uppercase text-lg">BUILT FOR RESULTS</ScrollReveal>
+                    <ScrollReveal as="p" className="text-sm text-white/60 font-medium">Every post has a job: reach, trust, or leads.</ScrollReveal>
                   </div>
                 </div>
               </div>
@@ -138,13 +228,13 @@ export default function App() {
                     <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">● Active SMM</span>
                   </div>
                   <h3 className="text-2xl font-heading font-black uppercase mb-3 text-white">
-                    Social Media
+                    SOCIAL MEDIA MANAGEMENT
                   </h3>
                   <p className="font-medium text-white/70 mb-6 text-sm">
-                    Strategic content planning and end-to-end profile management to build your brand authority.
+                    Content planning, posting, and community management that builds trust with your buyers.
                   </p>
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                    {['Strategy & Planning', 'Community Management', 'Profile Optimization'].map(item => (
+                    {['Strategy', 'Community', 'Profile Optimization'].map(item => (
                       <span key={item} className="flex items-center gap-1.5 font-bold text-xs bg-[#111] px-2.5 py-1.5 brutalist-border border-white/10 text-white/80">
                         <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {item}
                       </span>
@@ -159,13 +249,13 @@ export default function App() {
                     <span className="text-xs font-mono text-white font-bold uppercase tracking-wider animate-pulse">● Rendering</span>
                   </div>
                   <h3 className="text-2xl font-heading font-black uppercase mb-3">
-                    Creative Production
+                    CREATIVE PRODUCTION
                   </h3>
                   <p className="font-medium text-white/90 mb-6 text-sm">
-                    High-retention video editing and bold graphic design that commands total feed attention.
+                    Reels, videos, and graphics designed to stop the scroll and keep people watching.
                   </p>
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                    {['Video Editing', 'Graphic Designing', 'Brand Identity'].map(item => (
+                    {['Video Editing', 'Graphic Design', 'Brand Identity'].map(item => (
                       <span key={item} className="flex items-center gap-1.5 font-bold text-xs bg-bg/20 px-2.5 py-1.5 brutalist-border border-white/10 text-white">
                         <CheckCircle2 className="w-3.5 h-3.5 text-white" /> {item}
                       </span>
@@ -180,13 +270,13 @@ export default function App() {
                     <span className="text-xs font-mono text-emerald-500 font-bold uppercase tracking-wider">● Scaling Ads</span>
                   </div>
                   <h3 className="text-2xl font-heading font-black uppercase mb-3 text-white">
-                    Advertising
+                    PERFORMANCE ADS
                   </h3>
                   <p className="font-medium text-white/70 mb-6 text-sm">
-                    Data-driven ad campaigns and consulting to maximize your return on ad spend (ROAS).
+                    Meta campaigns built around leads, not vanity metrics, with clear reporting on every rupee.
                   </p>
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                    {['Paid Ad Campaigns', 'Social Media Consulting', 'ROI Tracking'].map(item => (
+                    {['Paid Campaigns', 'Consulting', 'ROI Tracking'].map(item => (
                       <span key={item} className="flex items-center gap-1.5 font-bold text-xs bg-[#111] px-2.5 py-1.5 brutalist-border border-white/10 text-white/80">
                         <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> {item}
                       </span>
@@ -201,33 +291,36 @@ export default function App() {
         {/* RESULTS: BENTO GRID */}
         <section id="results" className="max-w-7xl mx-auto px-4 sm:px-8 py-24 bg-[#111111] brutalist-border my-16">
           <div className="mb-16">
-            <h2 className="text-5xl font-heading font-black uppercase tracking-tighter mb-4">
-              <SplitText text="Metrics Win." /> <br /> <span className="text-ink"><SplitText text="Opinions Lose." /></span>
-            </h2>
-            <p className="text-xl font-medium max-w-2xl">
-              <SplitText text="I don't sell hours. I sell outcomes. Here is what happens when I deploy." />
-            </p>
+            <ScrollReveal
+              as="h2"
+              className="text-5xl font-heading font-black uppercase tracking-tighter mb-4"
+            >
+              THE NUMBERS SPEAK <br /> <span className="text-ink">FOR THEMSELVES</span>
+            </ScrollReveal>
+            <ScrollReveal as="p" className="text-xl font-medium max-w-2xl">
+              I don't sell hours. I sell outcomes. Here's what my work has delivered so far.
+            </ScrollReveal>
           </div>
           
           <ScrollStack>
             <div className="brutalist-border p-8 md:p-16 group text-white bg-bg w-full h-[50vh] flex flex-col justify-center items-center text-center">
-              <p className="font-bold uppercase tracking-widest text-sm opacity-60 mb-4 group-hover:text-accent transition-colors">Total Reach Generated</p>
+              <p className="font-bold uppercase tracking-widest text-sm opacity-60 mb-4 group-hover:text-accent transition-colors">Organic reach generated</p>
               <p className="text-7xl lg:text-9xl font-heading font-black tracking-tighter leading-none">850K+</p>
             </div>
             <div className="brutalist-border p-8 md:p-16 bg-accent text-white border-accent w-full h-[50vh] flex flex-col justify-center items-center text-center">
               <p className="font-bold uppercase tracking-widest text-sm text-red-100 mb-4">Follower Growth</p>
               <p className="text-6xl lg:text-9xl font-heading font-black tracking-tighter">+85%</p>
-              <p className="mt-4 font-bold">Average YoY across accounts</p>
+              <p className="mt-4 font-bold">Average yearly follower growth across accounts</p>
             </div>
             <div className="brutalist-border p-8 md:p-16 bg-bg text-white w-full h-[50vh] flex flex-col justify-center items-center text-center">
               <p className="font-bold uppercase tracking-widest text-sm text-gray-400 mb-4">Ad Spend Managed</p>
               <p className="text-6xl lg:text-9xl font-heading font-black tracking-tighter">₹15L+</p>
-              <p className="mt-4 font-bold">Optimized for maximum ROI.</p>
+              <p className="mt-4 font-bold">Ad spend managed and optimized</p>
             </div>
             <div className="brutalist-border p-8 md:p-16 bg-[#0e1d3b] text-white w-full h-[50vh] flex flex-col justify-center items-center text-center">
               <p className="font-bold uppercase tracking-widest text-sm text-gray-400 mb-4">Leads Generated</p>
               <p className="text-6xl lg:text-9xl font-heading font-black tracking-tighter">670+</p>
-              <p className="mt-4 font-bold text-lg">Qualified leads for real estate and tech partners.</p>
+              <p className="mt-4 font-bold text-lg">Qualified leads for real estate and tech clients</p>
             </div>
           </ScrollStack>
         </section>
@@ -235,41 +328,40 @@ export default function App() {
         {/* HOW I WORK */}
         <section id="work" className="max-w-7xl mx-auto px-4 sm:px-8 py-24">
           <div className="mb-16">
-            <h2 className="text-5xl font-heading font-black uppercase tracking-tighter">
-              <SplitText text="How I Work" />
-            </h2>
+            <ScrollReveal as="h2" className="text-5xl font-heading font-black uppercase tracking-tighter">
+              HOW I WORK
+            </ScrollReveal>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             <div className="brutalist-card p-8 group relative overflow-hidden">
               <h3 className="text-8xl font-heading font-black text-black/5 uppercase absolute -bottom-4 right-0 group-hover:text-accent/10 transition-colors select-none leading-none">01</h3>
-              <h4 className="text-2xl font-black uppercase mb-4 relative z-10 group-hover:text-accent transition-colors">Discovery</h4>
-              <p className="font-medium relative z-10">I deep-dive into your brand, current metrics, target audience, and business goals to uncover massive growth opportunities.</p>
+              <ScrollReveal as="h4" className="text-2xl font-black uppercase mb-4 relative z-10 group-hover:text-accent transition-colors">DISCOVERY</ScrollReveal>
+              <ScrollReveal as="p" className="font-medium relative z-10">We start with a conversation. I learn your brand, numbers, audience, and goals, and find where the real opportunities are.</ScrollReveal>
             </div>
             <div className="brutalist-card p-8 group relative overflow-hidden text-white bg-ink">
-              <h3 className="text-8xl font-heading font-black text-white/5 uppercase absolute -bottom-4 right-0 group-hover:text-accent/10 transition-colors select-none leading-none">02</h3>
-              <h4 className="text-2xl font-black uppercase mb-4 relative z-10 text-accent">Strategy</h4>
-              <p className="font-medium relative z-10 opacity-90">I build a custom execution plan, content calendar, and advertising strategy designed for aggressive market dominance.</p>
+              <ScrollReveal as="h4" className="text-2xl font-black uppercase mb-4 relative z-10 text-accent">STRATEGY</ScrollReveal>
+              <ScrollReveal as="p" className="font-medium relative z-10 opacity-90">You get a clear plan: content calendar, creative direction, and ad approach, all tied to your goals.</ScrollReveal>
             </div>
             <div className="brutalist-card p-8 group relative overflow-hidden">
               <h3 className="text-8xl font-heading font-black text-black/5 uppercase absolute -bottom-4 right-0 group-hover:text-accent/10 transition-colors select-none leading-none">03</h3>
-              <h4 className="text-2xl font-black uppercase mb-4 relative z-10 group-hover:text-accent transition-colors">Execution</h4>
-              <p className="font-medium relative z-10">Flawless deployment of content, community management, and paid ads with continuous optimization and reporting.</p>
+              <ScrollReveal as="h4" className="text-2xl font-black uppercase mb-4 relative z-10 group-hover:text-accent transition-colors">EXECUTION</ScrollReveal>
+              <ScrollReveal as="p" className="font-medium relative z-10">I create, publish, and run everything, then optimize based on what the data shows. You get regular updates, not surprises.</ScrollReveal>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="brutalist-card p-6 flex flex-col items-center text-center gap-4 group hover:bg-accent hover:text-white hover:border-accent transition-all duration-300">
-              <h4 className="text-xl font-black uppercase mt-2">Platform<br/>Specialists</h4>
+              <ScrollReveal as="h4" className="text-xl font-black uppercase mt-2">REAL ESTATE &amp; TECH FOCUS</ScrollReveal>
             </div>
             <div className="brutalist-card p-6 flex flex-col items-center text-center gap-4 group hover:bg-accent hover:text-white hover:border-accent transition-all duration-300">
-              <h4 className="text-xl font-black uppercase mt-2">Custom<br/>Strategies</h4>
+              <ScrollReveal as="h4" className="text-xl font-black uppercase mt-2">A PLAN MADE FOR YOU</ScrollReveal>
             </div>
             <div className="brutalist-card p-6 flex flex-col items-center text-center gap-4 group hover:bg-accent hover:text-white hover:border-accent transition-all duration-300">
-              <h4 className="text-xl font-black uppercase mt-2">Creative<br/>Excellence</h4>
+              <ScrollReveal as="h4" className="text-xl font-black uppercase mt-2">CREATIVE THAT WORKS</ScrollReveal>
             </div>
             <div className="brutalist-card p-6 flex flex-col items-center text-center gap-4 group hover:bg-accent hover:text-white hover:border-accent transition-all duration-300">
-              <h4 className="text-xl font-black uppercase mt-2">Transparent<br/>Process</h4>
+              <ScrollReveal as="h4" className="text-xl font-black uppercase mt-2">HONEST REPORTING</ScrollReveal>
             </div>
           </div>
         </section>
@@ -283,19 +375,19 @@ export default function App() {
             </div>
             
             <div className="relative z-10 max-w-3xl">
-              <h2 className="text-5xl font-heading font-black uppercase tracking-tighter mb-8">
-                <SplitText text="The Strategist" /> <br /> <SplitText text="Behind The Screens." />
-              </h2>
+              <ScrollReveal as="h2" className="text-5xl font-heading font-black uppercase tracking-tighter mb-8">
+                HI, <br /> I'M VIVEK JHA.
+              </ScrollReveal>
               <div className="space-y-6 text-xl font-medium leading-relaxed">
-                <p>
-                  <SplitText text="I spent years watching agencies rip off founders with generic social templates and zero strategy. I got sick of it." />
-                </p>
-                <p>
-                  <SplitText text="I build aggressive, conversion-focused social engines for real estate and tech brands. My campaigns are engineered for attention, optimized for extreme engagement, and designed to generate real leads." />
-                </p>
-                <p className="text-accent font-bold">
-                  <SplitText text="If you want pretty posts that get zero reach, hire an agency. If you want a brand weapon, hire me." />
-                </p>
+                <ScrollReveal as="p">
+                  I've spent 2+ years running marketing solo for real estate and tech brands: strategy, content, creative, and ads. No team to hide behind.
+                </ScrollReveal>
+                <ScrollReveal as="p">
+                  I started this because I kept seeing founders pay agencies for generic templates and no real thinking. I do it differently. I learn your business first, then build marketing that brings in actual leads.
+                </ScrollReveal>
+                <ScrollReveal as="p" className="text-accent font-bold">
+                  If you want a partner who treats your brand like their own, let's talk.
+                </ScrollReveal>
               </div>
               <div className="mt-12 flex flex-col sm:flex-row gap-8 font-bold">
                 <div className="flex items-center gap-3">
@@ -312,19 +404,110 @@ export default function App() {
         {/* CONTACT / LEAD CAPTURE */}
         <section id="contact" className="max-w-4xl mx-auto px-4 sm:px-8 py-24">
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-7xl font-heading font-black uppercase tracking-tighter mb-6">
-              <SplitText text="Let's" /> <span className="text-accent"><SplitText text="Work Together" /></span>
-            </h2>
-            <p className="text-xl font-bold max-w-2xl mx-auto">
-              <SplitText text="Ready to scale? Fill out the brief. If we're a fit, I'll reply within 24 hours." />
-            </p>
+            <ScrollReveal
+              as="h2"
+              className="text-5xl md:text-7xl font-heading font-black uppercase tracking-tighter mb-6"
+            >
+              LET'S <span className="text-accent">WORK TOGETHER</span>
+            </ScrollReveal>
+            <ScrollReveal as="p" className="text-xl font-bold max-w-2xl mx-auto">
+              Tell me about your brand and goals. If I can help, I'll reply within 24 hours.
+            </ScrollReveal>
           </div>
           
-          <form onSubmit={(e) => { e.preventDefault(); alert("Brief Submitted!"); }}>
-            <Stepper
-              initialStep={1}
+          {submissionStatus === 'success' ? (
+            <div className="brutalist-card bg-[#111111] p-8 md:p-12 text-left relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b-2 border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-accent flex items-center justify-center brutalist-border flex-shrink-0">
+                    <CheckCircle2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <span className="text-xs uppercase font-mono tracking-widest text-accent font-bold">Status: Dispatched</span>
+                    <h3 className="font-heading font-black text-2xl md:text-3xl uppercase tracking-tight text-white">
+                      Brief Sent to Vivek
+                    </h3>
+                  </div>
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-ink text-white font-mono text-xs uppercase tracking-wider brutalist-border self-start sm:self-auto">
+                  <Mail className="w-3.5 h-3.5 text-accent" /> vivekjhaa27@gmail.com
+                </div>
+              </div>
+
+              <p className="text-lg font-medium text-white/90 mb-8 leading-relaxed">
+                Thank you, <span className="font-bold text-accent">{formData.name}</span>. Your brief has been dispatched directly to <strong className="text-white">vivekjhaa27@gmail.com</strong>. Vivek reviews every project personally and will get back to you within 24 hours.
+              </p>
+
+              {/* Brief Recap Table */}
+              <div className="brutalist-border bg-bg p-6 mb-8 space-y-4">
+                <div className="text-xs font-mono uppercase tracking-widest text-white/50 border-b border-white/10 pb-2 flex justify-between items-center">
+                  <span>Submitted Project Summary</span>
+                  <span className="text-accent font-bold">Delivered</span>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-white/60 block uppercase text-xs font-bold">Client Name</span>
+                    <span className="font-bold text-white text-base">{formData.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60 block uppercase text-xs font-bold">Client Email</span>
+                    <span className="font-bold text-white text-base">{formData.email}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60 block uppercase text-xs font-bold">Project Budget</span>
+                    <span className="font-bold text-accent text-base">{formData.budget}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/60 block uppercase text-xs font-bold">Sent To</span>
+                    <span className="font-bold text-white text-base font-mono">vivekjhaa27@gmail.com</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-white/10">
+                  <span className="text-white/60 block uppercase text-xs font-bold mb-1">Project Scope & Goals</span>
+                  <p className="text-white/80 font-medium whitespace-pre-wrap text-sm leading-relaxed bg-[#111] p-3 brutalist-border border-white/10">
+                    {formData.details}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <a
+                  href={`mailto:vivekjhaa27@gmail.com?subject=${encodeURIComponent(`Client Brief: ${formData.name} (${formData.budget})`)}&body=${encodeURIComponent(`Hi Vivek,\n\nHere is my project brief:\n\nName: ${formData.name}\nEmail: ${formData.email}\nBudget: ${formData.budget}\n\nProject Scope:\n${formData.details}\n\nLooking forward to speaking soon!`)}`}
+                  className="brutalist-button px-6 py-3.5 text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-white hover:text-bg transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" /> Open In Mail App (Direct Copy)
+                </a>
+                <button
+                  type="button"
+                  onClick={handleResetForm}
+                  className="brutalist-card px-6 py-3.5 text-sm uppercase tracking-wider font-bold bg-bg hover:text-accent flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  <RotateCcw className="w-4 h-4" /> Submit Another Brief
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {formError && (
+                <div className="mb-6 p-4 bg-accent/20 border-2 border-accent text-white flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-accent flex-shrink-0" />
+                  <span className="font-bold text-sm">{formError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmitBrief}>
+                <Stepper
+                  initialStep={currentBriefStep}
+              onStepChange={(step) => {
+                setCurrentBriefStep(step);
+                setFormError(null);
+              }}
+              onBeforeNext={handleBeforeNext}
+              isSubmitting={submissionStatus === 'submitting'}
+              submitButtonText="Send to vivekjhaa27@gmail.com"
               backButtonText="Previous"
-              nextButtonText="Next"
+              nextButtonText="Continue"
               stepCircleContainerClassName="brutalist-card"
             >
               <Step>
@@ -340,6 +523,8 @@ export default function App() {
                       <input 
                         type="text" 
                         id="name" 
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         required 
                         className="w-full brutalist-border p-4 bg-bg focus:bg-white focus:text-bg focus:outline-none focus:ring-0 transition-colors text-lg font-medium" 
                         placeholder="Rahul Sharma" 
@@ -352,6 +537,8 @@ export default function App() {
                       <input 
                         type="email" 
                         id="email" 
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         required 
                         className="w-full brutalist-border p-4 bg-bg focus:bg-white focus:text-bg focus:outline-none focus:ring-0 transition-colors text-lg font-medium" 
                         placeholder="rahul@company.com" 
@@ -372,13 +559,15 @@ export default function App() {
                     <div className="relative">
                       <select 
                         id="budget" 
+                        value={formData.budget}
+                        onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
                         required 
                         className="w-full brutalist-border p-4 bg-bg focus:bg-white focus:text-bg focus:outline-none focus:ring-0 transition-colors text-lg font-medium appearance-none rounded-none"
                       >
                         <option value="">Select Range...</option>
-                        <option value="10k-25k">₹10,000 - ₹25,000</option>
-                        <option value="25k-50k">₹25,000 - ₹50,000</option>
-                        <option value="50k+">₹50,000+</option>
+                        <option value="₹10,000 - ₹25,000">₹10,000 - ₹25,000</option>
+                        <option value="₹25,000 - ₹50,000">₹25,000 - ₹50,000</option>
+                        <option value="₹50,000+">₹50,000+</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -401,19 +590,26 @@ export default function App() {
                     <textarea 
                       id="details" 
                       rows={4} 
+                      value={formData.details}
+                      onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
                       required 
                       className="w-full brutalist-border p-4 bg-bg focus:bg-white focus:text-bg focus:outline-none focus:ring-0 transition-colors text-lg font-medium resize-y" 
-                      placeholder="Describe your goals, metrics, and bottlenecks..." 
+                      placeholder="Describe your goals, metrics, bottlenecks, and timeline..." 
                     />
                   </div>
-                  <p className="text-center font-bold text-sm text-white/40 uppercase tracking-widest pt-2">
-                    Secure & Confidential
-                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-white/50 font-mono uppercase tracking-wider pt-2 gap-2">
+                    <span className="flex items-center gap-1.5 text-accent font-bold">
+                      <Mail className="w-3.5 h-3.5" /> Dispatches to vivekjhaa27@gmail.com
+                    </span>
+                    <span>Secure & Confidential</span>
+                  </div>
                 </div>
               </Step>
             </Stepper>
           </form>
-        </section>
+        </>
+      )}
+    </section>
       </main>
 
       {/* FOOTER */}

@@ -11,25 +11,16 @@ export const ShinyText = ({
   children,
   className = '',
   disabled = false,
-  speed = 3,
+  speed = 3.5,
 }: ShinyTextProps) => {
-  const animationDuration = `${speed}s`;
-
   return (
     <span
-      className={`inline-block ${
-        disabled ? '' : 'animate-shine hover:animate-none'
+      className={`inline-block text-white opacity-100 font-black ${
+        disabled ? '' : 'animate-shine-bright'
       } ${className}`}
       style={{
-        WebkitMaskImage: disabled
-          ? 'none'
-          : 'linear-gradient(120deg, rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0.75) 60%)',
-        WebkitMaskSize: '200% 100%',
-        maskImage: disabled
-          ? 'none'
-          : 'linear-gradient(120deg, rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0.75) 60%)',
-        maskSize: '200% 100%',
-        animationDuration: animationDuration,
+        opacity: 1,
+        animationDuration: `${speed}s`,
       }}
     >
       {children}

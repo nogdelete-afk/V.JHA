@@ -6,6 +6,8 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   initialStep?: number;
   onStepChange?: (step: number) => void;
   onFinalStepCompleted?: () => void;
+  onBeforeNext?: (currentStep: number) => boolean;
+  isSubmitting?: boolean;
   stepCircleContainerClassName?: string;
   stepContainerClassName?: string;
   contentClassName?: string;
@@ -14,6 +16,7 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
   nextButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   backButtonText?: string;
   nextButtonText?: string;
+  submitButtonText?: string;
   disableStepIndicators?: boolean;
   renderStepIndicator?: (props: {
     step: number;
@@ -27,6 +30,8 @@ export default function Stepper({
   initialStep = 1,
   onStepChange = () => {},
   onFinalStepCompleted = () => {},
+  onBeforeNext,
+  isSubmitting = false,
   stepCircleContainerClassName = '',
   stepContainerClassName = '',
   contentClassName = '',
@@ -35,6 +40,7 @@ export default function Stepper({
   nextButtonProps = {},
   backButtonText = 'Back',
   nextButtonText = 'Continue',
+  submitButtonText = 'Submit Brief',
   disableStepIndicators = false,
   renderStepIndicator,
   ...rest
@@ -63,6 +69,9 @@ export default function Stepper({
   };
 
   const handleNext = () => {
+    if (onBeforeNext && !onBeforeNext(currentStep)) {
+      return;
+    }
     if (!isLastStep) {
       setDirection(1);
       updateStep(currentStep + 1);
@@ -70,6 +79,9 @@ export default function Stepper({
   };
 
   const handleComplete = () => {
+    if (onBeforeNext && !onBeforeNext(currentStep)) {
+      return;
+    }
     setDirection(1);
     updateStep(totalSteps + 1);
   };
@@ -93,6 +105,9 @@ export default function Stepper({
                     step: stepNumber,
                     currentStep,
                     onStepClick: clicked => {
+                      if (clicked > currentStep && onBeforeNext && !onBeforeNext(currentStep)) {
+                        return;
+                      }
                       setDirection(clicked > currentStep ? 1 : -1);
                       updateStep(clicked);
                     }
@@ -103,6 +118,9 @@ export default function Stepper({
                     disableStepIndicators={disableStepIndicators}
                     currentStep={currentStep}
                     onClickStep={clicked => {
+                      if (clicked > currentStep && onBeforeNext && !onBeforeNext(currentStep)) {
+                        return;
+                      }
                       setDirection(clicked > currentStep ? 1 : -1);
                       updateStep(clicked);
                     }}
@@ -129,9 +147,10 @@ export default function Stepper({
               {currentStep !== 1 && (
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handleBack}
                   className={`brutalist-button px-8 py-4 tracking-widest uppercase text-sm w-full sm:w-auto ${
-                    currentStep === 1
+                    currentStep === 1 || isSubmitting
                       ? 'pointer-events-none opacity-50 text-neutral-400'
                       : 'hover:bg-bg'
                   }`}
@@ -142,11 +161,12 @@ export default function Stepper({
               )}
               <button
                 type={isLastStep ? 'submit' : 'button'}
-                onClick={isLastStep ? handleComplete : handleNext}
-                className={`brutalist-button px-8 py-4 font-semibold tracking-widest uppercase text-sm bg-accent hover:bg-white text-bg hover:text-bg transition-colors ${currentStep === 1 ? 'w-full' : 'w-full sm:w-auto'}`}
+                disabled={isSubmitting || nextButtonProps.disabled}
+                onClick={isLastStep ? undefined : handleNext}
+                className={`brutalist-button px-8 py-4 font-semibold tracking-widest uppercase text-sm bg-accent hover:bg-white text-bg hover:text-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${currentStep === 1 ? 'w-full' : 'w-full sm:w-auto'}`}
                 {...nextButtonProps}
               >
-                {isLastStep ? 'Submit Brief' : nextButtonText}
+                {isLastStep ? (isSubmitting ? 'Sending Brief...' : submitButtonText) : nextButtonText}
               </button>
             </div>
           </div>
