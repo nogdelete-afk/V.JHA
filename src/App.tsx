@@ -12,6 +12,7 @@ import { MagicContainer, MagicCard } from './components/MagicBento';
 import { Dock, DockItem } from './components/Dock';
 import Stepper, { Step } from './components/Stepper';
 import { AnimatedList } from './components/AnimatedList';
+import AccordionGallery from './components/AccordionGallery';
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -357,6 +358,9 @@ export default function App() {
             </div>
           </div>
         </section>
+ 
+        {/* ACCORDION GALLERY */}
+        <AccordionGallery id="gallery" />
 
         {/* ABOUT ME */}
         <section id="about" className="max-w-7xl mx-auto px-4 sm:px-8 py-24 my-16">
