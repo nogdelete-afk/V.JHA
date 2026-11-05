@@ -102,6 +102,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   overflow: hidden;
   white-space: nowrap;
   display: flex;
+  width: 100%;
   background: var(--ink);
   color: var(--bg);
   padding: 16px 0;
@@ -111,7 +112,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 .marquee-content {
   display: flex;
-  animation: marquee 20s linear infinite;
+  flex-shrink: 0;
+  width: max-content;
+  will-change: transform;
+  animation: marquee 40s linear infinite;
 }
 
 .marquee-content span {
@@ -124,8 +128,8 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 /* Bento Grid Layouts */

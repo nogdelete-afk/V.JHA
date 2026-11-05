@@ -155,25 +155,16 @@ export default function App() {
         <section className="my-16" aria-label="Trusted Clients">
           <div className="marquee-container">
             <div className="marquee-content">
-              <span>Harish Khanna</span><span>•</span>
-              <span>Stallion Buildtech</span><span>•</span>
-              <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer</span><span>•</span>
-              <span>Media Mentor</span><span>•</span>
-              <span>Momento</span><span>•</span>
-              {/* Duplicate for seamless infinite scroll */}
-              <span>Harish Khanna</span><span>•</span>
-              <span>Stallion Buildtech</span><span>•</span>
-              <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer</span><span>•</span>
-              <span>Media Mentor</span><span>•</span>
-              <span>Momento</span><span>•</span>
-              <span>Harish Khanna</span><span>•</span>
-              <span>Stallion Buildtech</span><span>•</span>
-              <span>Veda Epic Tales</span><span>•</span>
-              <span>Advent Developer</span><span>•</span>
-              <span>Media Mentor</span><span>•</span>
-              <span>Momento</span><span>•</span>
+              {Array.from({ length: 6 }).map((_, copyIndex) => (
+                <React.Fragment key={copyIndex}>
+                  <span>Harish Khanna</span><span>•</span>
+                  <span>Stallion Buildtech</span><span>•</span>
+                  <span>Veda Epic Tales</span><span>•</span>
+                  <span>Advent Developer</span><span>•</span>
+                  <span>Media Mentor</span><span>•</span>
+                  <span>Momento</span><span>•</span>
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </section>
